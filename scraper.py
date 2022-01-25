@@ -39,12 +39,19 @@ def get_one_object(path:str):
     return data
 
 def main():
-    # TODO : Get List of paths
-    paths = ["1e7dc743-971e-400c-b2d6-275a8bb65690"]
+    paths = list()
+    for page in range(1,3):
+        paths.extend(get_paths_of_page(page))
+        print(f"Getting paths of page {page}")
+    
+    pathlen = len(paths)
+    print(f"found {pathlen} total")
 
     allObjects = list()
 
-    for path in paths:
+    for idx, path in enumerate(paths, start=1):
+        pathname = path.split('/').pop()
+        print(f"Getting Content of path {pathname} ({idx}/{pathlen})")
         allObjects.append(get_one_object(path))
 
     dump(allObjects)
@@ -52,7 +59,7 @@ def main():
 def get_paths_of_page(page:int):
     result = []
     headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0"}
-    nurl     = f"https://espirs.jrc.ec.europa.eu/en/espirs/public/PublicSearchResults?searchingtext=&status=&seveso=&industrytype=&country=&currentPage={page}&rpp=10&nace=&sortby=&sortdir=ASC"
+    nurl     = f"https://espirs.jrc.ec.europa.eu/en/espirs/public/PublicSearchResults?searchingtext=&status=&seveso=&industrytype=&country=&currentPage={page}&rpp=50&nace=&sortby=&sortdir=ASC"
     r       = requests.get(url=nurl, cookies=cookies_dict, headers=headers)
     soup    = BeautifulSoup(r.content, 'html.parser')
     #print(soup.prettify) 
